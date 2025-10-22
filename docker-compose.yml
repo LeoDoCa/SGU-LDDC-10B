@@ -4,7 +4,7 @@ services:
     container_name: sgu-database
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: adj-demo
+      MYSQL_DATABASE: sgu_database
     ports:
       - "3307:3306"
     volumes: 
