@@ -36,9 +36,9 @@ UserController.save = async (user) => {
   }
 };
 
-UserController.update = async (id, user) => {
+UserController.update = async (user) => {
   try {
-    const res = await fetch(`${API_URL}/${id}`, {
+    const res = await fetch(`${API_URL}/`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(user),

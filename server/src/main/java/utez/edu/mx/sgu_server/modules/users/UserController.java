@@ -1,6 +1,5 @@
 package utez.edu.mx.sgu_server.modules.users;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.sgu_server.utils.ApiResponse;

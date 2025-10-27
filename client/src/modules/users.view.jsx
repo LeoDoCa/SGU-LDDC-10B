@@ -35,7 +35,7 @@ export default function UsersView() {
     e.preventDefault();
 
     if (form.id) {
-      await UserController.update(form.id, form);
+      await UserController.update(form);
     } else {
       await UserController.save(form);
     }
@@ -210,7 +210,7 @@ export default function UsersView() {
                 users.map((u) => (
                   <tr key={u.id}>
                     <td>{u.id}</td>
-                    <td>{`${u.firstName} ${u.lastName1}`}</td>
+                    <td>{`${u.firstName} ${u.secondName} ${u.lastName1} ${u.lastName2}`}</td>
                     <td>{u.email}</td>
                     <td>{u.phoneNumber}</td>
                     <td>
