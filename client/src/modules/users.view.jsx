@@ -10,9 +10,9 @@ export default function UsersView() {
     lastName1: "",
     lastName2: "",
     email: "",
-    phoneNumber: ""
+    phoneNumber: "",
   });
-  const [searchId, setSearchId] = useState(""); 
+  const [searchId, setSearchId] = useState("");
 
   const loadUsers = async () => {
     const response = await UserController.getAll();
@@ -34,11 +34,24 @@ export default function UsersView() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    let response;
+
     if (form.id) {
-      await UserController.update(form);
+      response = await UserController.update(form);
     } else {
-      await UserController.save(form);
+      response = await UserController.save(form);
     }
+
+    if (response?.error) {
+      alert(response.message);
+      return;
+    }
+
+    alert(
+      form.id
+        ? "Usuario actualizado correctamente"
+        : "Usuario registrado correctamente"
+    );
 
     resetForm();
     loadUsers();
@@ -52,7 +65,7 @@ export default function UsersView() {
       lastName1: "",
       lastName2: "",
       email: "",
-      phoneNumber: ""
+      phoneNumber: "",
     });
   };
 
@@ -74,7 +87,9 @@ export default function UsersView() {
     try {
       const response = await UserController.getById(searchId);
       if (response && response.data) {
-        const userData = response.data.id ? response.data : response.data.value || response.data;
+        const userData = response.data.id
+          ? response.data
+          : response.data.value || response.data;
         setUsers([userData]);
       } else {
         setUsers([]);

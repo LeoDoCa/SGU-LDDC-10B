@@ -29,10 +29,17 @@ UserController.save = async (user) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(user),
     });
-    return await res.json();
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || "Error al guardar usuario");
+    }
+
+    return data;
   } catch (err) {
     console.error(err);
-    return null;
+    return { error: true, message: err.message };
   }
 };
 
@@ -43,10 +50,17 @@ UserController.update = async (user) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(user),
     });
-    return await res.json();
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || "Error al actualizar usuario");
+    }
+
+    return data;
   } catch (err) {
     console.error(err);
-    return null;
+    return { error: true, message: err.message };
   }
 };
 
