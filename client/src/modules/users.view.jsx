@@ -167,13 +167,17 @@ export default function UsersView() {
             <div className="mb-2">
               <label>Teléfono</label>
               <input
-                type="number"
+                type="text"
                 name="phoneNumber"
-                maxLength={10}
-                minLength={10}
                 className="form-control"
                 value={form.phoneNumber}
-                onChange={handleChange}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (/^\d{0,10}$/.test(value)) {
+                    handleChange(e);
+                  }
+                }}
+                maxLength={10}
               />
             </div>
 
