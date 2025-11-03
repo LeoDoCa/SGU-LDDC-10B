@@ -178,6 +178,7 @@ export default function UsersView() {
                   }
                 }}
                 maxLength={10}
+                required
               />
             </div>
 
