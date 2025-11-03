@@ -25,6 +25,14 @@ public class UserService {
                     HttpStatus.BAD_REQUEST
             );
         }
+    
+        if (repository.findByPhoneNumber(user.getPhoneNumber()).isPresent()) {
+            return new ResponseEntity<>(
+                    new ApiResponse(HttpStatus.BAD_REQUEST, true, "El número de teléfono ya está registrado"),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+
         repository.save(user);
         return new ResponseEntity<>(
                 new ApiResponse(user, HttpStatus.CREATED),
@@ -53,7 +61,14 @@ public class UserService {
         if (!user.getEmail().equals(userX.getEmail())) {
             if (repository.existsByEmail(user.getEmail())) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body(new ApiResponse(HttpStatus.CONFLICT,true, "Usuario con este email ya existe"));
+                        .body(new ApiResponse(HttpStatus.CONFLICT, true, "Usuario con este email ya existe"));
+            }
+        }
+    
+        if (!user.getPhoneNumber().equals(userX.getPhoneNumber())) {
+            if (repository.findByPhoneNumber(user.getPhoneNumber()).isPresent()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new ApiResponse(HttpStatus.CONFLICT, true, "Usuario con este número de teléfono ya existe"));
             }
         }
 
