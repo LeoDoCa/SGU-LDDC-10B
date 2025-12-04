@@ -1,0 +1,220 @@
+npm create vite@latest
+
+const SaluteController = {};
+const ENV = import.meta.env;
+
+SaluteController.salute = async (data) => {
+    try {
+        console.log('Datos a enviar:', JSON.stringify(data));
+        console.log('URL:', ENV.VITE_API_URL);
+        
+        const response = await fetch(`${ENV.VITE_API_URL}`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+        
+        console.log('Status:', response.status);
+        console.log('Status OK:', response.ok);
+        
+        const result = await response.json();
+        console.log('Respuesta del servidor:', result);
+        
+        return result;
+    } catch (error) {
+        console.error('Error en salute:', error);
+        return { success: false, error: error.message };
+    }
+};
+
+export default SaluteController;
+
+
+
+import { useState } from "react";
+import SaluteController from "./modules/salute.controller.js";
+
+function App() {
+  const [nombre, setNombre] = useState("");
+  const [apellidos, setApellidos] = useState("");
+  const [mensaje, setMensaje] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSaludar = async () => {
+    if (!nombre.trim() || !apellidos.trim()) {
+      alert("Por favor, ingresa tu nombre y apellidos");
+      return;
+    }
+
+    setLoading(true);
+    
+    const response = await SaluteController.salute({
+      names: nombre,
+      surnames: apellidos
+    });
+    
+    setLoading(false);
+
+    if (response && !response.error) {
+      setMensaje(response.data);
+    } else {
+      setMensaje(response?.message || "Error al obtener el saludo");
+    }
+  };
+
+  return (
+    <>
+      <nav className="navbar navbar-expand-lg bg-dark navbar-dark">
+        <div className="container-fluid">
+          <a href="" className="navbar-brand">Leonardo Daniel Dorantes Castañeda - 10°B</a>
+          <div className="collapse navbar-collapse">
+            <ul className="navbar-nav">
+              <li className="navbar-item">
+                <a href= "" className="nav-link active">Home</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <div className="container mt-5">
+        <div className="row justify-content-center">
+          <div className="col-md-6">
+            <div className="card">
+              <div className="card-body">
+                <h4 className="card-title mb-4">Sistema de Saludo</h4>
+                
+                <div className="mb-3">
+                  <label className="form-label">Nombre(s)</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Ingresa tu(s) nombre(s)"
+                    value={nombre}
+                    onChange={(e) => setNombre(e.target.value)}
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label">Apellido(s)</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Ingresa tu(s) apellido(s)"
+                    value={apellidos}
+                    onChange={(e) => setApellidos(e.target.value)}
+                  />
+                </div>
+
+                <button
+                  onClick={handleSaludar}
+                  className="btn btn-primary w-100"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2"></span>
+                      Procesando...
+                    </>
+                  ) : (
+                    "Saludar"
+                  )}
+                </button>
+
+                {mensaje && (
+                  <div className="alert alert-info mt-3 mb-0">
+                    <strong>Respuesta:</strong> {mensaje}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+export default App;
+
+
+
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import App from './App.jsx'
+import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
+
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+)
+
+
+
+VITE_API_URL=${VITE_API_URL} 
+
+
+
+# Etapa 1
+
+FROM node:20 AS build
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+ARG API_URL
+
+ENV VITE_API_URL=$API_URL
+
+RUN npm run build
+
+# Etapa 2: Imagen
+
+FROM nginx:alpine
+
+COPY --from=build /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
+
+
+
+{
+  "name": "client",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.8",
+    "dotenv": "^17.2.3",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/react": "^19.2.5",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
+    "vite": "^7.2.4"
+  }
+}

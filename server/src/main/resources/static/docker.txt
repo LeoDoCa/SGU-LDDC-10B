@@ -1,0 +1,38 @@
+docker network create –driver bridge [nombre de la red]
+
+Puerto izquierda = Puerto PC
+Puerto derecha = Puerto contenedor
+
+
+
+services:
+  frontend:
+    # cambiar nombre imagen
+    image: client:v1.0.2
+    build:
+      context: ./client
+      args:
+        API_URL: http://localhost:8086/api-salute
+    container_name: exu2-cliente
+    ports:
+      - "5173:80"
+    networks:
+      - exu2-lddc-net
+  backend:
+  # cambiar nombre imagen 
+    image: operations:v1.0.2
+    build:
+      context: ./server
+    container_name: exu2-operaciones
+    environment:
+      SERVER_PORT: 8080
+    ports:
+      - "8086:8080"
+    networks:
+      - exu2-lddc-net
+    depends_on:
+      - frontend
+
+networks:
+  exu2-lddc-net:
+    external: true

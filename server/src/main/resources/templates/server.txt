@@ -1,0 +1,171 @@
+Lombok
+SpringWeb
+Java 17
+jdk 21
+
+
+
+package mx.edu.utez.server.modules.salute;
+
+public class PersonDTO {
+    private String names;
+    private String surnames;
+
+    public String getNames() {
+        return names;
+    }
+
+    public void setNames(String names) {
+        this.names = names;
+    }
+
+    public String getSurnames() {
+        return surnames;
+    }
+
+    public void setSurnames(String surnames) {
+        this.surnames = surnames;
+    }
+
+    public PersonDTO() {
+    }
+
+    public PersonDTO(String names, String surnames) {
+        this.names = names;
+        this.surnames = surnames;
+    }
+}
+
+
+
+package mx.edu.utez.server.modules.salute;
+
+import mx.edu.utez.server.utils.ApiResponse;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api-salute")
+@CrossOrigin("*")
+public class SaluteController {
+    private final SaluteService saluteService;
+
+    public SaluteController(SaluteService saluteService) {
+        this.saluteService = saluteService;
+    }
+
+    @PostMapping("")
+    public ResponseEntity<ApiResponse> salute(@RequestBody PersonDTO dto){
+        return saluteService.salute(dto);
+    }
+}
+
+
+
+package mx.edu.utez.server.modules.salute;
+
+import mx.edu.utez.server.utils.ApiResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+@Service
+public class SaluteService {
+    public ResponseEntity<ApiResponse> salute(PersonDTO dto) {
+        ApiResponse body = new ApiResponse("Hola " + dto.getNames() + " " + dto.getSurnames() + " ¿Cómo estás?", HttpStatus.OK, "Operación exitosa");
+        return new ResponseEntity<>(body, HttpStatus.OK);
+    }
+}
+
+
+
+package mx.edu.utez.server.utils;
+
+import org.springframework.http.HttpStatus;
+
+public class ApiResponse {
+    private Object data;
+    private HttpStatus status;
+    private boolean error;
+    private String message;
+
+    public ApiResponse(Object data, HttpStatus status) {
+        this.data = data;
+        this.status = status;
+    }
+
+    public ApiResponse(Object data, HttpStatus status, String message) {
+        this.data = data;
+        this.status = status;
+        this.message = message;
+    }
+    public ApiResponse(HttpStatus status, boolean error, String message) {
+        this.status = status;
+        this.error = error;
+        this.message = message;
+    }
+
+    public ApiResponse() {
+    }
+
+    public ApiResponse(Object data, HttpStatus status, boolean error, String message) {
+        this.data = data;
+        this.status = status;
+        this.error = error;
+        this.message = message;
+    }
+
+    public Object getData() {
+        return data;
+    }
+
+    public void setData(Object data) {
+        this.data = data;
+    }
+
+    public HttpStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(HttpStatus status) {
+        this.status = status;
+    }
+
+    public boolean isError() {
+        return error;
+    }
+
+    public void setError(boolean error) {
+        this.error = error;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+}
+
+
+
+spring.application.name=server
+server.port=${SERVER_PORT}
+
+
+
+FROM maven:3.9.9-eclipse-temurin-21
+
+WORKDIR /app
+
+COPY . .
+
+RUN mvn clean package -DskipTests && cp target/*.jar app.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
+
+
+
